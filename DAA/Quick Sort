@@ -1,0 +1,55 @@
+import time
+import random
+
+def deterministic_partition(arr, low, high):
+    pivot = arr[high]
+    i = low - 1
+    
+    for j in range(low, high):
+        if arr[j] <= pivot:
+            i += 1
+            arr[i], arr[j] = arr[j], arr[i]
+    
+    arr[i + 1], arr[high] = arr[high], arr[i + 1]
+    return i + 1
+
+def deterministic_quicksort(arr, low, high):
+    if low < high:
+        pivot_index = deterministic_partition(arr, low, high)
+        deterministic_quicksort(arr, low, pivot_index - 1)
+        deterministic_quicksort(arr, pivot_index + 1, high)
+
+def randomized_partition(arr, low, high):
+    pivot_index = random.randint(low, high)
+    arr[pivot_index], arr[high] = arr[high], arr[pivot_index]
+    return deterministic_partition(arr, low, high)
+
+def randomized_quicksort(arr, low, high):
+    if low < high:
+        pivot_index = randomized_partition(arr, low, high)
+        randomized_quicksort(arr, low, pivot_index - 1)
+        randomized_quicksort(arr, pivot_index + 1, high)
+
+def generate_random_array(size):
+    return [random.randint(1, 1000) for _ in range(size)]
+
+def analyze_quicksort(variant_function, array_size):
+    arr = generate_random_array(array_size)
+    
+    start_time = time.time()
+    variant_function(arr, 0, array_size - 1)
+    end_time = time.time()
+    
+    execution_time = end_time - start_time
+    return execution_time
+
+if __name__ == "__main__":
+    array_size = 1000  # Change this to the desired size of the array
+
+    # Analyze deterministic quicksort
+    deterministic_time = analyze_quicksort(deterministic_quicksort, array_size)
+    print(f"Deterministic QuickSort Execution Time: {deterministic_time:.6f} seconds")
+
+    # Analyze randomized quicksort
+    randomized_time = analyze_quicksort(randomized_quicksort, array_size)
+    print(f"Randomized QuickSort Execution Time: {randomized_time:.6f} seconds")
